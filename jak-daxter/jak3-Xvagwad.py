@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # Jak 3 & Jak X: Combat Racing VAGWAD/VAGDIR extract
-# Written by Edness   v1.4   2023-05-10 - 2023-06-25
+# Written by Edness   v1.5   2023-05-10 - 2026-06-18
 
 # Usage:
 #   script.py  "X:\PATH\TO\VAGWAD.ENG"
@@ -51,7 +51,7 @@ class DecompressEntry:
                 tmp_name = cmp_name >> 21
             tmp_name, char_idx = divmod(tmp_name, len(CMP_CHARS))
             name += CMP_CHARS[char_idx]
-        self.name = name[::-1].strip() + ".VAG"
+        self.name = name[::-1].strip()
         #print(name[::-1], f"{flags:06b}", f"{self.offset:X}")
 
 def extract_vagwad(vagwad, outpath=""):
@@ -73,7 +73,7 @@ def extract_vagwad(vagwad, outpath=""):
     os.makedirs(outpath, exist_ok=True)
 
     with open(vagwad, "rb") as wad, open(vagdir, "rb") as dir:
-        if wad.read(0x4) != b"pGAV":
+        if wad.read(0x4) not in {b"pGAV", b"MSF0"}:
             print("Input is not a VAGWAD file!")
             return
 
@@ -105,7 +105,7 @@ def extract_vagwad(vagwad, outpath=""):
                 vag_size = entries[idx + 1].offset - entry.offset
                 vag_data = wad.read(vag_size)
 
-            if not vag_data.startswith(b"pGAV"):
+            if not vag_data.startswith((b"pGAV", b"MSF0")):
                 print("Failed to decompress entry! (Offset error)")
                 return
 
@@ -125,7 +125,7 @@ def extract_vagwad(vagwad, outpath=""):
             #    return
 
             #print(entry.name.ljust(12), f"{entry.offset:X}")
-            out_vag = os.path.join(outpath, entry.name)
+            out_vag = os.path.join(outpath, entry.name + (".VAG" if vag_data.startswith(b"pGAV") else ".MSF"))
             with open(out_vag, "wb") as vag:
                 print("Writing", out_vag)
                 vag.write(vag_data)
