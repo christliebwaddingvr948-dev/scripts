@@ -33,11 +33,11 @@
 
 # Written by Edness   v0.8d   2021-06-23 - 2023-12-25
 
-BoDebug = False
-BoModels = False
+BoDebug = True
+BoModels = True
 
-BoDmg = False  # Damage models
-BoLOD = False  # LOD models
+BoDmg = True  # Damage models
+BoLOD = True  # LOD models
 
 from inc_noesis import *
 import zlib
